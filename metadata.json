@@ -1,0 +1,6 @@
+{
+  "name": "NOC Tools & Echo Team Portal",
+  "description": "Unified NOC Operations Dashboard with integrated network diagnostics tools (Cek EA POP, IP Publik, Aradial, Traceroute) and integrated Echo Team Task Management.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
