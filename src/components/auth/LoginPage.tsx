@@ -7,8 +7,8 @@ export const LoginPage: React.FC = () => {
   const { login } = useAuth();
   const { isDark, toggleTheme } = useTheme();
 
-  const [username, setUsername] = useState('rudipradnyana');
-  const [password, setPassword] = useState('••••••••');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
@@ -70,7 +70,7 @@ export const LoginPage: React.FC = () => {
               NOC Tools & Echo Portal
             </h1>
             <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-              Masuk untuk melanjutkan ke portal operasional
+              Secure access for authorized personnel
             </p>
           </div>
 
@@ -184,7 +184,13 @@ export const LoginPage: React.FC = () => {
       <footer className={`w-full px-6 py-4 text-center text-xs ${
         isDark ? 'text-slate-500' : 'text-slate-400'
       }`}>
-        &copy; {new Date().getFullYear()} NOC Tools & Echo Team Portal
+        <div>
+  &copy; {new Date().getFullYear()} NOC Tools & Echo Team Portal
+</div>
+
+<div className="mt-1">
+  Version 1.0.0
+</div>
       </footer>
     </div>
   );
