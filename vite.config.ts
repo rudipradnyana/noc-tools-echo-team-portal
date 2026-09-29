@@ -5,6 +5,7 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
+    base: '/noc-tools-echo-team-portal/',
     plugins: [react(), tailwindcss()],
     resolve: {
       alias: {
