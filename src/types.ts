@@ -136,12 +136,15 @@ export interface ShiftLogEntry {
   impact: 'High' | 'Medium' | 'Low';
 }
 
+export type AccessLevel = 'admin' | 'employee';
+
 export interface AuthUser {
   id: string;
   username: string;
   name: string;
   email: string;
   role: string;
+  accessLevel: AccessLevel;
   initial: string;
   avatarBg?: string;
   shift?: string;

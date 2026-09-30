@@ -8,6 +8,7 @@ export const PRESET_USERS: AuthUser[] = [
     name: 'Rudi Pradnyana',
     email: 'rudipradnyana@gmail.com',
     role: 'NOC Engineer Shift',
+    accessLevel: 'employee',
     initial: 'R',
     avatarBg: 'bg-blue-600',
     shift: 'Shift 1 (08:00 - 16:00 WIB)',
@@ -19,6 +20,7 @@ export const PRESET_USERS: AuthUser[] = [
     name: 'Achmad Farisy',
     email: 'achmad.farisy@iconpln.co.id',
     role: 'Echo Team Lead / DWDM Specialist',
+    accessLevel: 'employee',
     initial: 'A',
     avatarBg: 'bg-emerald-600',
     shift: 'Daily Normal (08:00 - 17:00 WIB)',
@@ -30,6 +32,7 @@ export const PRESET_USERS: AuthUser[] = [
     name: 'NOC Central Admin',
     email: 'admin.noc@iconpln.co.id',
     role: 'NOC Operations Manager',
+    accessLevel: 'admin',
     initial: 'N',
     avatarBg: 'bg-indigo-600',
     shift: '24/7 Operations Supervisor',
@@ -54,7 +57,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const stored = localStorage.getItem(STORAGE_KEY) || sessionStorage.getItem(STORAGE_KEY);
       if (stored) {
-        return JSON.parse(stored) as AuthUser;
+        const parsed = JSON.parse(stored) as AuthUser;
+        if (!parsed.accessLevel) {
+          parsed.accessLevel = parsed.username === 'noc.admin' ? 'admin' : 'employee';
+        }
+        return parsed;
       }
     } catch (err) {
       console.error('Failed to parse stored auth user', err);
@@ -94,16 +101,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const displayName = cleanInput
         ? cleanInput.charAt(0).toUpperCase() + cleanInput.slice(1)
         : 'Operator NOC';
+      const isAdmin = cleanInput === 'admin' || cleanInput === 'noc.admin';
       loggedInUser = {
         id: `user-${Date.now()}`,
         username: cleanInput || 'operator.noc',
         name: displayName,
         email: cleanInput.includes('@') ? cleanInput : `${cleanInput || 'operator'}@iconpln.co.id`,
-        role: 'NOC Engineer',
+        role: isAdmin ? 'NOC Operations Manager' : 'NOC Engineer',
+        accessLevel: isAdmin ? 'admin' : 'employee',
         initial: (displayName.charAt(0) || 'O').toUpperCase(),
-        avatarBg: 'bg-blue-600',
-        shift: 'Shift Aktif',
-        gatewayIp: '10.12.0.1',
+        avatarBg: isAdmin ? 'bg-indigo-600' : 'bg-blue-600',
+        shift: isAdmin ? '24/7 Operations Supervisor' : 'Shift Aktif',
+        gatewayIp: isAdmin ? '10.12.100.1' : '10.12.0.1',
         loggedInAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
       };
     }
@@ -127,6 +136,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const loginAsPreset = (presetUser: AuthUser, remember: boolean = true) => {
     const updatedUser: AuthUser = {
       ...presetUser,
+      accessLevel: presetUser.accessLevel || (presetUser.username === 'noc.admin' ? 'admin' : 'employee'),
       loggedInAt: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
     };
     setUser(updatedUser);
