@@ -385,7 +385,7 @@ export const LoginPage: React.FC = () => {
                   <option value="ea">EA (Enterprise Access Specialist)</option>
                   <option value="tdm">TDM (TDM Specialist)</option>
                   <option value="manager">Manager (NOC Operations Manager)</option>
-                  <option value="asmen">Asmen (Asisten Manager)</option>
+                  <option value="mod">Manager On Duty</option>
                 </select>
               </div>
 

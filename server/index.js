@@ -34,7 +34,7 @@ app.post('/api/auth/register', async (req, res) => {
     const cleanFullName = String(fullName || cleanUsername).trim();
     const cleanRole = String(role).trim().toLowerCase();
 
-    const allowedRoles = ['admin', 'regular', 'analis', 'ea', 'tdm', 'manager', 'asmen'];
+    const allowedRoles = ['admin', 'regular', 'analis', 'ea', 'tdm', 'manager', 'mod'];
     if (!allowedRoles.includes(cleanRole)) {
       return res.status(400).json({
         success: false,

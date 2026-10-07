@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS users (
     username VARCHAR(50) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     full_name VARCHAR(100) NOT NULL,
-    role ENUM('admin', 'regular', 'analis', 'ea', 'tdm', 'manager', 'asmen') NOT NULL DEFAULT 'regular',
+    role ENUM('admin', 'regular', 'analis', 'ea', 'tdm', 'manager', 'mod') NOT NULL DEFAULT 'regular',
     status ENUM('pending', 'approved', 'rejected') NOT NULL DEFAULT 'pending',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

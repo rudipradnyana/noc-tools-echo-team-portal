@@ -138,7 +138,7 @@ export interface ShiftLogEntry {
 
 export type AccessLevel = 'admin' | 'employee';
 
-export type PortalRole = 'admin' | 'regular' | 'analis' | 'ea' | 'tdm' | 'manager' | 'asmen';
+export type PortalRole = 'admin' | 'regular' | 'analis' | 'ea' | 'tdm' | 'manager' | 'mod';
 export type UserApprovalStatus = 'pending' | 'approved' | 'rejected';
 
 export interface DatabaseUser {
