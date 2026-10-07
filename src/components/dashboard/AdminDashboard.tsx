@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard,
   Users,
@@ -54,7 +54,7 @@ import { useAuth } from '../../context/AuthContext';
 import { PRESET_USERS } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { useActivity } from '../../context/ActivityContext';
-import { AuthUser } from '../../types';
+import { AuthUser, DatabaseUser } from '../../types';
 import { INITIAL_NOC_TOOLS, MOCK_ALARMS, INITIAL_ECHO_TASKS } from '../../data/mockData';
 
 // ─── Admin Sidebar Nav Types ────────────────────────────────────────
@@ -67,50 +67,12 @@ type AdminNavId =
   | 'broadcast'
   | 'admin-settings';
 
-// ─── Mock: Registered Users (Extends from AuthContext Presets) ──────
+// ─── Mock: Registered Users ───────────────────────────────────────
 const REGISTERED_USERS: (AuthUser & { status: 'active' | 'inactive'; lastLogin: string })[] = [
   {
     ...PRESET_USERS[0],
     status: 'active',
-    lastLogin: '30 Sep 2026, 08:12',
-  },
-  {
-    ...PRESET_USERS[1],
-    status: 'active',
-    lastLogin: '30 Sep 2026, 07:55',
-  },
-  {
-    ...PRESET_USERS[2],
-    status: 'active',
-    lastLogin: '30 Sep 2026, 09:48',
-  },
-  {
-    id: 'user-dallas',
-    username: 'dallas.permadi',
-    name: 'Dallas Permadi',
-    email: 'dallas.permadi@iconpln.co.id',
-    role: 'NOC Engineer Shift',
-    accessLevel: 'employee',
-    initial: 'D',
-    avatarBg: 'bg-amber-600',
-    shift: 'Shift 2 (16:00 - 00:00 WIB)',
-    gatewayIp: '10.12.0.2',
-    status: 'active',
-    lastLogin: '29 Sep 2026, 16:05',
-  },
-  {
-    id: 'user-fahrizal',
-    username: 'moch.fahrizal',
-    name: 'Moch. Fahrizal',
-    email: 'moch.fahrizal@iconpln.co.id',
-    role: 'NOC Engineer Shift',
-    accessLevel: 'employee',
-    initial: 'F',
-    avatarBg: 'bg-rose-600',
-    shift: 'Shift 3 (00:00 - 08:00 WIB)',
-    gatewayIp: '10.12.0.3',
-    status: 'inactive',
-    lastLogin: '28 Sep 2026, 00:30',
+    lastLogin: 'Hari ini',
   },
 ];
 
@@ -127,15 +89,15 @@ interface AuditEntry {
 
 const MOCK_AUDIT_LOG: AuditEntry[] = [
   { id: 'a1', timestamp: '30 Sep 2026 09:48:12', actor: 'noc.admin', action: 'LOGIN', target: 'Admin Portal', ip: '10.12.100.1', severity: 'info' },
-  { id: 'a2', timestamp: '30 Sep 2026 09:32:05', actor: 'rudipradnyana', action: 'TOOL_ACCESS', target: 'CEK EA POP', ip: '10.12.0.1', severity: 'info' },
-  { id: 'a3', timestamp: '30 Sep 2026 08:55:41', actor: 'achmad.farisy', action: 'TASK_UPDATE', target: 'Echo Task: Migrasi DWDM Ring-3', ip: '10.12.0.254', severity: 'info' },
-  { id: 'a4', timestamp: '30 Sep 2026 08:12:30', actor: 'rudipradnyana', action: 'LOGIN', target: 'Employee Portal', ip: '10.12.0.1', severity: 'info' },
+  { id: 'a2', timestamp: '30 Sep 2026 09:32:05', actor: 'operator.noc', action: 'TOOL_ACCESS', target: 'CEK EA POP', ip: '10.12.0.1', severity: 'info' },
+  { id: 'a3', timestamp: '30 Sep 2026 08:55:41', actor: 'engineer.lead', action: 'TASK_UPDATE', target: 'Echo Task: Migrasi DWDM Ring-3', ip: '10.12.0.254', severity: 'info' },
+  { id: 'a4', timestamp: '30 Sep 2026 08:12:30', actor: 'operator.noc', action: 'LOGIN', target: 'Employee Portal', ip: '10.12.0.1', severity: 'info' },
   { id: 'a5', timestamp: '29 Sep 2026 23:45:18', actor: 'system', action: 'ALARM_TRIGGERED', target: 'BB Link: SBY-DPS Latency > 50ms', ip: '10.12.100.254', severity: 'warning' },
-  { id: 'a6', timestamp: '29 Sep 2026 22:10:33', actor: 'dallas.permadi', action: 'TOOL_ACCESS', target: 'CHECK BACKBONE IP JAWA-BALI', ip: '10.12.0.2', severity: 'info' },
-  { id: 'a7', timestamp: '29 Sep 2026 16:05:12', actor: 'dallas.permadi', action: 'LOGIN', target: 'Employee Portal', ip: '10.12.0.2', severity: 'info' },
+  { id: 'a6', timestamp: '29 Sep 2026 22:10:33', actor: 'engineer.shift', action: 'TOOL_ACCESS', target: 'CHECK BACKBONE IP JAWA-BALI', ip: '10.12.0.2', severity: 'info' },
+  { id: 'a7', timestamp: '29 Sep 2026 16:05:12', actor: 'engineer.shift', action: 'LOGIN', target: 'Employee Portal', ip: '10.12.0.2', severity: 'info' },
   { id: 'a8', timestamp: '29 Sep 2026 11:22:05', actor: 'system', action: 'ALARM_CRITICAL', target: 'POP Denpasar Barat: OLT Port Down', ip: '10.12.100.254', severity: 'critical' },
   { id: 'a9', timestamp: '29 Sep 2026 08:00:01', actor: 'system', action: 'SHIFT_HANDOVER', target: 'Shift 3 → Shift 1', ip: '10.12.100.254', severity: 'info' },
-  { id: 'a10', timestamp: '28 Sep 2026 14:30:55', actor: 'moch.fahrizal', action: 'REPORT_EXPORT', target: 'Weekly Alarm Summary PDF', ip: '10.12.0.3', severity: 'info' },
+  { id: 'a10', timestamp: '28 Sep 2026 14:30:55', actor: 'engineer.shift', action: 'REPORT_EXPORT', target: 'Weekly Alarm Summary PDF', ip: '10.12.0.3', severity: 'info' },
 ];
 
 // ─── Mock: Broadcasts ─────────────────────────────────────
@@ -168,10 +130,62 @@ export const AdminDashboard: React.FC = () => {
   const [newBroadcast, setNewBroadcast] = useState('');
   const [broadcastPriority, setBroadcastPriority] = useState<'normal' | 'urgent'>('normal');
 
+  // ─── Real-time MySQL Users State ────────────────────────
+  const [dbUsers, setDbUsers] = useState<DatabaseUser[]>([]);
+  const [userStatusFilter, setUserStatusFilter] = useState<'all' | 'pending' | 'approved' | 'rejected'>('all');
+  const [userSearchQuery, setUserSearchQuery] = useState('');
+  const [isLoadingUsers, setIsLoadingUsers] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState<number | null>(null);
+  const [statusFeedback, setStatusFeedback] = useState<string | null>(null);
+
+  const fetchUsers = useCallback(async () => {
+    setIsLoadingUsers(true);
+    try {
+      const res = await fetch('/api/users');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && Array.isArray(data.users)) {
+          setDbUsers(data.users);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to fetch users from MySQL', err);
+    } finally {
+      setIsLoadingUsers(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const handleUpdateUserStatus = async (userId: number, newStatus: 'approved' | 'rejected') => {
+    setActionLoadingId(userId);
+    setStatusFeedback(null);
+    try {
+      const res = await fetch(`/api/users/${userId}/status`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setStatusFeedback(`Akun user berhasil di-${newStatus === 'approved' ? 'ACC (Disetujui)' : 'Tolak'}! Data tersimpan di MySQL.`);
+        setDbUsers((prev) => prev.map((u) => (u.id === userId ? { ...u, status: newStatus } : u)));
+      }
+    } catch (err) {
+      console.error('Error updating status', err);
+    } finally {
+      setActionLoadingId(null);
+    }
+  };
+
+  const pendingCount = useMemo(() => dbUsers.filter((u) => u.status === 'pending').length, [dbUsers]);
+
   // ─── Computed Stats ────────────────────────────────────
   const stats = useMemo(() => {
-    const totalUsers = REGISTERED_USERS.length;
-    const activeUsers = REGISTERED_USERS.filter((u) => u.status === 'active').length;
+    const totalUsers = dbUsers.length > 0 ? dbUsers.length : REGISTERED_USERS.length;
+    const activeUsers = dbUsers.length > 0 ? dbUsers.filter((u) => u.status === 'approved').length : REGISTERED_USERS.filter((u) => u.status === 'active').length;
     const totalTools = INITIAL_NOC_TOOLS.length;
     const onlineTools = INITIAL_NOC_TOOLS.filter((t) => t.status === 'ONLINE').length;
     const totalAlarms = MOCK_ALARMS.length;
@@ -179,12 +193,12 @@ export const AdminDashboard: React.FC = () => {
     const totalTasks = INITIAL_ECHO_TASKS.length;
     const doneTasks = INITIAL_ECHO_TASKS.filter((t) => t.status === 'done').length;
     return { totalUsers, activeUsers, totalTools, onlineTools, totalAlarms, criticalAlarms, totalTasks, doneTasks };
-  }, []);
+  }, [dbUsers]);
 
   // ─── Admin Sidebar Nav Items ──────────────────────────
   const navItems: { id: AdminNavId; label: string; icon: React.ElementType; badge?: string }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
-    { id: 'users', label: 'User Management', icon: Users, badge: `${stats.totalUsers}` },
+    { id: 'users', label: 'User Management', icon: Users, badge: pendingCount > 0 ? `${pendingCount} ACC` : `${stats.totalUsers}` },
     { id: 'tools-config', label: 'Tools & Catalog', icon: Terminal, badge: `${stats.totalTools}` },
     { id: 'audit-log', label: 'Audit Log', icon: FileText, badge: `${MOCK_AUDIT_LOG.length}` },
     { id: 'alarm-policy', label: 'Alarm & Policy', icon: AlertTriangle, badge: `${stats.criticalAlarms}` },
@@ -595,15 +609,104 @@ export const AdminDashboard: React.FC = () => {
             {/* ─── Page: User Management ──────────────────── */}
             {activeNav === 'users' && (
               <>
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                   <div>
-                    <h1 className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>User Management</h1>
-                    <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Kelola akun operator, engineer, dan administrator NOC</p>
+                    <div className="flex items-center gap-2.5">
+                      <h1 className={`text-2xl font-extrabold tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                        User Management & Approval
+                      </h1>
+                      <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        MySQL XAMPP Live
+                      </span>
+                    </div>
+                    <p className={`text-sm mt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                      Kelola akun operator, role NOC, dan persetujuan (ACC) akun pendaftar baru
+                    </p>
                   </div>
-                  <button className="flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold rounded-xl shadow-lg shadow-indigo-500/20 transition-colors cursor-pointer">
-                    <UserPlus className="w-4 h-4" />
-                    <span>Add User</span>
-                  </button>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={fetchUsers}
+                      disabled={isLoadingUsers}
+                      className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                        isDark
+                          ? 'bg-slate-800/80 border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700'
+                          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50'
+                      }`}
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isLoadingUsers ? 'animate-spin' : ''}`} />
+                      <span>Refresh MySQL</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Status Feedback Toast */}
+                {statusFeedback && (
+                  <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                      <span>{statusFeedback}</span>
+                    </div>
+                    <button onClick={() => setStatusFeedback(null)} className="text-emerald-400 hover:text-emerald-300 cursor-pointer">
+                      <X className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+
+                {/* Filter and Search Bar */}
+                <div className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 ${
+                  isDark ? 'bg-[#0c1322] border-[#16233b]' : 'bg-white border-slate-200'
+                }`}>
+                  {/* Status Tabs */}
+                  <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+                    {[
+                      { key: 'all', label: 'Semua Akun', count: dbUsers.length },
+                      { key: 'pending', label: 'Menunggu ACC', count: dbUsers.filter((u) => u.status === 'pending').length, isPending: true },
+                      { key: 'approved', label: 'Disetujui', count: dbUsers.filter((u) => u.status === 'approved').length },
+                      { key: 'rejected', label: 'Ditolak', count: dbUsers.filter((u) => u.status === 'rejected').length },
+                    ].map((tab) => (
+                      <button
+                        key={tab.key}
+                        onClick={() => setUserStatusFilter(tab.key as typeof userStatusFilter)}
+                        className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer whitespace-nowrap ${
+                          userStatusFilter === tab.key
+                            ? 'bg-blue-600 text-white shadow-sm'
+                            : isDark
+                            ? 'bg-slate-900/60 text-slate-400 hover:text-white border border-slate-800'
+                            : 'bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200'
+                        }`}
+                      >
+                        <span>{tab.label}</span>
+                        <span className={`px-1.5 py-0.2 rounded-md text-[10px] ${
+                          tab.isPending && tab.count > 0
+                            ? 'bg-amber-500 text-slate-950 font-bold animate-pulse'
+                            : userStatusFilter === tab.key
+                            ? 'bg-blue-700 text-white'
+                            : isDark
+                            ? 'bg-slate-800 text-slate-400'
+                            : 'bg-slate-200 text-slate-700'
+                        }`}>
+                          {tab.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Search Input */}
+                  <div className="relative min-w-[220px]">
+                    <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input
+                      type="text"
+                      value={userSearchQuery}
+                      onChange={(e) => setUserSearchQuery(e.target.value)}
+                      placeholder="Cari nama atau username..."
+                      className={`w-full pl-9 pr-3 py-1.5 rounded-xl border text-xs transition-all focus:outline-none focus:ring-2 ${
+                        isDark
+                          ? 'bg-[#080d19] border-slate-800 text-white placeholder-slate-500 focus:border-blue-500 focus:ring-blue-500/20'
+                          : 'bg-slate-50 border-slate-200 text-slate-900 placeholder-slate-400 focus:border-blue-600 focus:ring-blue-600/20'
+                      }`}
+                    />
+                  </div>
                 </div>
 
                 {/* User Table */}
@@ -614,60 +717,142 @@ export const AdminDashboard: React.FC = () => {
                         <tr className={`text-[11px] font-semibold uppercase tracking-wider ${isDark ? 'bg-[#10192b] text-slate-400' : 'bg-slate-50 text-slate-500'}`}>
                           <th className="text-left px-5 py-3.5">User</th>
                           <th className="text-left px-5 py-3.5">Role</th>
-                          <th className="text-left px-5 py-3.5">Access Level</th>
-                          <th className="text-left px-5 py-3.5">Shift</th>
-                          <th className="text-left px-5 py-3.5">Status</th>
-                          <th className="text-left px-5 py-3.5">Last Login</th>
-                          <th className="text-right px-5 py-3.5">Actions</th>
+                          <th className="text-left px-5 py-3.5">Status Persetujuan</th>
+                          <th className="text-left px-5 py-3.5">Tanggal Daftar</th>
+                          <th className="text-center px-5 py-3.5">Aksi Persetujuan (ACC)</th>
                         </tr>
                       </thead>
                       <tbody className={`divide-y ${isDark ? 'divide-[#15233c]' : 'divide-slate-100'}`}>
-                        {REGISTERED_USERS.map((u) => (
-                          <tr key={u.id} className={`transition-colors ${isDark ? 'hover:bg-[#111c30]' : 'hover:bg-slate-50'}`}>
-                            <td className="px-5 py-4">
-                              <div className="flex items-center gap-3">
-                                <div className={`w-9 h-9 rounded-full ${u.avatarBg} text-white font-bold flex items-center justify-center text-sm shadow-md`}>{u.initial}</div>
-                                <div>
-                                  <div className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>{u.name}</div>
-                                  <div className={`text-[11px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{u.username}</div>
-                                </div>
-                              </div>
-                            </td>
-                            <td className={`px-5 py-4 text-xs ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{u.role}</td>
-                            <td className="px-5 py-4">
-                              <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg ${
-                                u.accessLevel === 'admin'
-                                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/20'
-                                  : 'bg-blue-500/10 text-blue-400 border border-blue-500/20'
-                              }`}>
-                                {u.accessLevel.toUpperCase()}
-                              </span>
-                            </td>
-                            <td className={`px-5 py-4 text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{u.shift || '—'}</td>
-                            <td className="px-5 py-4">
-                              <div className="flex items-center gap-1.5">
-                                <span className={`w-2 h-2 rounded-full ${u.status === 'active' ? 'bg-emerald-500' : 'bg-slate-500'}`} />
-                                <span className={`text-xs font-medium ${u.status === 'active' ? 'text-emerald-500' : isDark ? 'text-slate-500' : 'text-slate-400'}`}>
-                                  {u.status === 'active' ? 'Active' : 'Inactive'}
-                                </span>
-                              </div>
-                            </td>
-                            <td className={`px-5 py-4 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{u.lastLogin}</td>
-                            <td className="px-5 py-4">
-                              <div className="flex items-center justify-end gap-1.5">
-                                <button className={`p-1.5 rounded-lg transition-colors cursor-pointer ${isDark ? 'text-slate-400 hover:text-white hover:bg-[#1a2b46]' : 'text-slate-400 hover:text-slate-700 hover:bg-slate-100'}`} title="View">
-                                  <Eye className="w-4 h-4" />
-                                </button>
-                                <button className={`p-1.5 rounded-lg transition-colors cursor-pointer ${isDark ? 'text-slate-400 hover:text-indigo-400 hover:bg-indigo-500/10' : 'text-slate-400 hover:text-indigo-600 hover:bg-indigo-50'}`} title="Edit">
-                                  <Edit3 className="w-4 h-4" />
-                                </button>
-                                <button className={`p-1.5 rounded-lg transition-colors cursor-pointer ${isDark ? 'text-slate-400 hover:text-rose-400 hover:bg-rose-500/10' : 'text-slate-400 hover:text-rose-600 hover:bg-rose-50'}`} title="Delete">
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
+                        {dbUsers
+                          .filter((u) => {
+                            if (userStatusFilter !== 'all' && u.status !== userStatusFilter) return false;
+                            if (userSearchQuery.trim()) {
+                              const q = userSearchQuery.toLowerCase();
+                              return (
+                                u.username.toLowerCase().includes(q) ||
+                                (u.full_name && u.full_name.toLowerCase().includes(q))
+                              );
+                            }
+                            return true;
+                          })
+                          .map((u) => {
+                            const isPending = u.status === 'pending';
+                            const isApproved = u.status === 'approved';
+                            const isRejected = u.status === 'rejected';
+                            const isActionLoading = actionLoadingId === u.id;
+
+                            const roleBadgeColors: Record<string, string> = {
+                              admin: 'bg-rose-500/10 text-rose-400 border-rose-500/20 font-bold',
+                              manager: 'bg-purple-500/10 text-purple-400 border-purple-500/20',
+                              asmen: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20',
+                              analis: 'bg-blue-500/10 text-blue-400 border-blue-500/20',
+                              ea: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20',
+                              tdm: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20',
+                              regular: 'bg-slate-500/10 text-slate-400 border-slate-500/20',
+                            };
+
+                            return (
+                              <tr key={u.id} className={`transition-colors ${isDark ? 'hover:bg-[#111c30]' : 'hover:bg-slate-50'}`}>
+                                <td className="px-5 py-4">
+                                  <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 text-white font-bold flex items-center justify-center text-sm shadow-md">
+                                      {(u.full_name || u.username).charAt(0).toUpperCase()}
+                                    </div>
+                                    <div>
+                                      <div className={`font-semibold ${isDark ? 'text-white' : 'text-slate-900'}`}>
+                                        {u.full_name || u.username}
+                                      </div>
+                                      <div className={`text-[11px] font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                        @{u.username}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+
+                                <td className="px-5 py-4">
+                                  <span className={`text-[11px] font-semibold px-2.5 py-1 rounded-lg border uppercase ${
+                                    roleBadgeColors[u.role] || roleBadgeColors.regular
+                                  }`}>
+                                    {u.role}
+                                  </span>
+                                </td>
+
+                                <td className="px-5 py-4">
+                                  {isPending && (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 animate-pulse">
+                                      <Clock className="w-3.5 h-3.5" />
+                                      Menunggu ACC
+                                    </span>
+                                  )}
+                                  {isApproved && (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+                                      <CheckCircle2 className="w-3.5 h-3.5" />
+                                      Disetujui (Approved)
+                                    </span>
+                                  )}
+                                  {isRejected && (
+                                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                                      <XCircle className="w-3.5 h-3.5" />
+                                      Ditolak
+                                    </span>
+                                  )}
+                                </td>
+
+                                <td className={`px-5 py-4 text-xs font-mono ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                                  {u.created_at ? new Date(u.created_at).toLocaleDateString('id-ID', {
+                                    day: '2-digit',
+                                    month: 'short',
+                                    year: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  }) : '—'}
+                                </td>
+
+                                <td className="px-5 py-4">
+                                  <div className="flex items-center justify-center gap-2">
+                                    {isPending ? (
+                                      <>
+                                        <button
+                                          onClick={() => handleUpdateUserStatus(u.id, 'approved')}
+                                          disabled={isActionLoading}
+                                          className="flex items-center gap-1 px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold shadow-sm transition-all cursor-pointer disabled:opacity-50"
+                                          title="Setujui akun ini agar bisa login"
+                                        >
+                                          <CheckCircle2 className="w-3.5 h-3.5" />
+                                          <span>ACC Akun</span>
+                                        </button>
+                                        <button
+                                          onClick={() => handleUpdateUserStatus(u.id, 'rejected')}
+                                          disabled={isActionLoading}
+                                          className="flex items-center gap-1 px-2.5 py-1.5 bg-rose-600/10 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 rounded-lg text-xs font-semibold transition-all cursor-pointer disabled:opacity-50"
+                                          title="Tolak pendaftaran ini"
+                                        >
+                                          <XCircle className="w-3.5 h-3.5" />
+                                          <span>Tolak</span>
+                                        </button>
+                                      </>
+                                    ) : isApproved ? (
+                                      <button
+                                        onClick={() => handleUpdateUserStatus(u.id, 'rejected')}
+                                        disabled={isActionLoading}
+                                        className="text-xs text-rose-400 hover:text-rose-300 hover:underline cursor-pointer disabled:opacity-50"
+                                      >
+                                        Batalkan ACC
+                                      </button>
+                                    ) : (
+                                      <button
+                                        onClick={() => handleUpdateUserStatus(u.id, 'approved')}
+                                        disabled={isActionLoading}
+                                        className="text-xs text-emerald-400 hover:text-emerald-300 hover:underline cursor-pointer disabled:opacity-50"
+                                      >
+                                        ACC Ulang
+                                      </button>
+                                    )}
+                                  </div>
+                                </td>
+                              </tr>
+                            );
+                          })}
                       </tbody>
                     </table>
                   </div>

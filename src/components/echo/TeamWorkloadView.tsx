@@ -37,9 +37,9 @@ interface PersonilWorkload {
 
 const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   {
-    username: 'achmad.farisy',
-    name: 'Achmad Farisy',
-    email: 'achmad.farisy@iconpln.co.id',
+    username: 'lead.noc',
+    name: 'Lead NOC Engineer',
+    email: 'lead.noc@iconpln.co.id',
     avatarChar: 'A',
     todoCount: 1,
     inProgressCount: 0,
@@ -60,7 +60,7 @@ const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   },
   {
     username: 'rahmat',
-    name: 'Rahmat Iskandar',
+    name: 'Enterprise Specialist',
     email: 'rahmat.iskandar@iconpln.co.id',
     avatarChar: 'R',
     todoCount: 9,
@@ -135,8 +135,8 @@ const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   },
   {
     username: 'jihan',
-    name: 'Jihan Hasanah',
-    email: 'jihan.hasanah@iconpln.co.id',
+    name: 'Traffic Analyst',
+    email: 'analyst.noc@iconpln.co.id',
     avatarChar: 'J',
     todoCount: 2,
     inProgressCount: 0,
@@ -152,8 +152,8 @@ const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   },
   {
     username: 'dallas',
-    name: 'Dallas Permadi',
-    email: 'dallas.permadi@iconpln.co.id',
+    name: 'Shift 1 Engineer',
+    email: 'shift1.noc@iconpln.co.id',
     avatarChar: 'D',
     todoCount: 5,
     inProgressCount: 0,
@@ -169,8 +169,8 @@ const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   { username: 'bintang', name: 'Bintang Alamsyah', email: 'bintang.alamsyah@iconpln.co.id', avatarChar: 'B', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
   {
     username: 'moch',
-    name: 'Moch Fahrizal',
-    email: 'moch.fahrizal@iconpln.co.id',
+    name: 'Shift 2 Engineer',
+    email: 'shift2.noc@iconpln.co.id',
     avatarChar: 'M',
     todoCount: 4,
     inProgressCount: 0,
@@ -191,9 +191,9 @@ const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
   { username: 'bayu', name: 'Bayu Wicaksono', email: 'bayu.wicaksono@iconpln.co.id', avatarChar: 'B', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
   { username: 'aldi', name: 'Aldi Firmansyah', email: 'aldi.firmansyah@iconpln.co.id', avatarChar: 'A', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
   {
-    username: 'rudipradnyana',
-    name: 'Rudi Pradnyana',
-    email: 'rudipradnyana@gmail.com',
+    username: 'ops.noc',
+    name: 'Operations Engineer',
+    email: 'operator@iconpln.co.id',
     avatarChar: 'R',
     todoCount: 0,
     inProgressCount: 0,
@@ -208,7 +208,7 @@ export const TeamWorkloadView: React.FC = () => {
   const [personilList] = useState<PersonilWorkload[]>(INITIAL_PERSONIL_DATA);
   const [chartMode, setChartMode] = useState<'Bar' | 'Line'>('Bar');
   const [expandedPersonil, setExpandedPersonil] = useState<Record<string, boolean>>({
-    'achmad.farisy': true,
+    'lead.noc': true,
   });
 
   const toggleExpand = (username: string) => {
@@ -244,7 +244,7 @@ export const TeamWorkloadView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5 cursor-pointer">
-            <span className="text-xs font-semibold text-slate-700">rudipradnyana</span>
+            <span className="text-xs font-semibold text-slate-700">ops.noc</span>
             <div className="w-8 h-8 rounded-full bg-[#1d4ed8] text-white font-bold flex items-center justify-center text-sm shadow-sm">
               R
             </div>

@@ -193,9 +193,9 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({
               setShowNotifications(false);
             }}
             className={`w-8 h-8 rounded-full ${user?.avatarBg || 'bg-[#1d4ed8]'} text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-blue-500/30 cursor-pointer hover:scale-105 transition-transform select-none`}
-            title={`${user?.name || 'Rudi'} (${user?.role || 'NOC Engineer'})`}
+            title={`${user?.name || 'Operator'} (${user?.role || 'NOC Engineer'})`}
           >
-            {user?.initial || 'R'}
+            {user?.initial || 'O'}
           </div>
 
           {/* Profile Dropdown */}
@@ -209,14 +209,14 @@ export const AppTopBar: React.FC<AppTopBarProps> = ({
                 isDark ? 'border-slate-800' : 'border-slate-100'
               }`}>
                 <div className={`w-10 h-10 rounded-full ${user?.avatarBg || 'bg-[#1d4ed8]'} text-white font-bold flex items-center justify-center text-base shadow`}>
-                  {user?.initial || 'R'}
+                  {user?.initial || 'O'}
                 </div>
                 <div className="overflow-hidden">
                   <div className={`text-sm font-bold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>
-                    {user?.name || 'Rudi'}
+                    {user?.name || 'Operator NOC'}
                   </div>
                   <div className={`text-xs truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    {user?.role || 'NOC Engineer Shift'}
+                    {user?.role || 'NOC Engineer'}
                   </div>
                   <div className="text-[10px] text-emerald-500 dark:text-emerald-400 flex items-center gap-1 mt-0.5 truncate">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse shrink-0"></span>

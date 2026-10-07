@@ -88,7 +88,7 @@ export const EchoWorkspace: React.FC<EchoWorkspaceProps> = ({
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newTaskPriority, setNewTaskPriority] = useState<TaskPriority>('Medium');
   const [newTaskType, setNewTaskType] = useState<TaskType>('Terencana');
-  const [newTaskAssignee, setNewTaskAssignee] = useState('achmad.farisy');
+  const [newTaskAssignee, setNewTaskAssignee] = useState('lead.noc');
   const [newTaskSubtasksTotal, setNewTaskSubtasksTotal] = useState('0');
 
   // Filtered tasks
@@ -118,15 +118,15 @@ export const EchoWorkspace: React.FC<EchoWorkspaceProps> = ({
     if (!newTaskTitle.trim()) return;
 
     const assigneeMap: Record<string, { name: string; username: string; initial: string; avatarBg: string }> = {
-      'achmad.farisy': { name: 'Achmad Farisy', username: 'achmad.farisy', initial: 'A', avatarBg: 'bg-blue-600' },
-      'dallas.permadi': { name: 'Dallas Permadi', username: 'dallas.permadi', initial: 'D', avatarBg: 'bg-indigo-600' },
-      'moch.fahrizal': { name: 'Moch Fahrizal', username: 'moch.fahrizal', initial: 'M', avatarBg: 'bg-emerald-600' },
-      'jihan.hasanah': { name: 'Jihan Hasanah', username: 'jihan.hasanah', initial: 'J', avatarBg: 'bg-purple-600' },
-      'rahmat.iskan...': { name: 'Rahmat Iskandar', username: 'rahmat.iskan...', initial: 'R', avatarBg: 'bg-cyan-600' },
-      'rudi.pradnyana': { name: 'Rudi Pradnyana', username: 'rudipradnyana', initial: 'R', avatarBg: 'bg-blue-600' },
+      'lead.noc': { name: 'Lead NOC Engineer', username: 'lead.noc', initial: 'A', avatarBg: 'bg-blue-600' },
+      'shift1.noc': { name: 'Shift 1 Engineer', username: 'shift1.noc', initial: 'D', avatarBg: 'bg-indigo-600' },
+      'shift2.noc': { name: 'Shift 2 Engineer', username: 'shift2.noc', initial: 'M', avatarBg: 'bg-emerald-600' },
+      'analyst.noc': { name: 'Traffic Analyst', username: 'analyst.noc', initial: 'J', avatarBg: 'bg-purple-600' },
+      'ea.noc': { name: 'Enterprise Specialist', username: 'ea.noc', initial: 'R', avatarBg: 'bg-cyan-600' },
+      'rudi.pradnyana': { name: 'Operations Engineer', username: 'ops.noc', initial: 'R', avatarBg: 'bg-blue-600' },
     };
 
-    const assignee = assigneeMap[newTaskAssignee] || assigneeMap['achmad.farisy'];
+    const assignee = assigneeMap[newTaskAssignee] || assigneeMap['lead.noc'];
     const totalSub = parseInt(newTaskSubtasksTotal) || 0;
 
     onAddTask({
@@ -355,7 +355,7 @@ export const EchoWorkspace: React.FC<EchoWorkspaceProps> = ({
 
             <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
               <span className="text-xs font-semibold text-slate-700 hidden sm:inline">
-                rudipradnyana
+                ops.noc
               </span>
               <div className="w-7 h-7 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-xs">
                 R
@@ -894,12 +894,12 @@ export const EchoWorkspace: React.FC<EchoWorkspaceProps> = ({
                     onChange={(e) => setNewTaskAssignee(e.target.value)}
                     className="w-full px-3 py-2 rounded-lg border border-slate-300"
                   >
-                    <option value="achmad.farisy">Achmad Farisy</option>
-                    <option value="dallas.permadi">Dallas Permadi</option>
-                    <option value="moch.fahrizal">Moch Fahrizal</option>
-                    <option value="jihan.hasanah">Jihan Hasanah</option>
-                    <option value="rahmat.iskan...">Rahmat Iskandar</option>
-                    <option value="rudi.pradnyana">Rudi Pradnyana</option>
+                    <option value="lead.noc">Lead NOC Engineer</option>
+                    <option value="shift1.noc">Shift 1 Engineer</option>
+                    <option value="shift2.noc">Shift 2 Engineer</option>
+                    <option value="analyst.noc">Traffic Analyst</option>
+                    <option value="ea.noc">Enterprise Specialist</option>
+                    <option value="rudi.pradnyana">Operations Engineer</option>
                   </select>
                 </div>
 

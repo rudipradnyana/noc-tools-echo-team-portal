@@ -115,7 +115,7 @@ const INITIAL_AUDIT_LOGS: AuditLogItem[] = [
   {
     id: 'log-11',
     timestamp: '2026-09-09 16:45:00',
-    editor: 'achmad.farisy',
+    editor: 'lead.noc',
     popId: 'POP_3BDG00045',
     fieldChanged: 'Update SBU',
     oldValue: '—',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AppSidebar } from '../layout/AppSidebar';
 import { AppTopBar } from '../layout/AppTopBar';
 import { NocDashboardView } from '../tools/NocDashboardView';
@@ -22,42 +22,32 @@ import { NocAiChatbot } from '../ai/NocAiChatbot';
 
 export const EmployeeDashboard: React.FC = () => {
   const { isDark } = useTheme();
-  const { user } = useAuth();
+  const { user, favorites, toggleFavoriteTool } = useAuth();
   const { logToolAccess, logActivity } = useActivity();
   const [activeNav, setActiveNav] = useState<string>('dashboard');
   const [currentAlarmTab, setCurrentAlarmTab] = useState<CleanAlarmSubTab>('alarm_list');
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<ToolCategory>('ALL');
   const [selectedWorkbenchToolId, setSelectedWorkbenchToolId] = useState<string>('cek-ea-pop');
 
-  const [tools, setTools] = useState<NocTool[]>(() => {
-    try {
-      const saved = localStorage.getItem('noc_favorite_tool_ids');
-      if (saved) {
-        const favIds = JSON.parse(saved) as string[];
-        return INITIAL_NOC_TOOLS.map((t) => ({
-          ...t,
-          isFavorite: favIds.includes(t.id),
-        }));
-      }
-    } catch {
-      // ignore
-    }
-    return INITIAL_NOC_TOOLS;
-  });
+  const [tools, setTools] = useState<NocTool[]>(() =>
+    INITIAL_NOC_TOOLS.map((t) => ({
+      ...t,
+      isFavorite: favorites.includes(t.id),
+    }))
+  );
+
+  // Sinkronkan tool favorit dengan data MySQL pengguna yang sedang login
+  useEffect(() => {
+    setTools((prev) =>
+      prev.map((t) => ({
+        ...t,
+        isFavorite: favorites.includes(t.id),
+      }))
+    );
+  }, [favorites]);
 
   const handleToggleFavoriteTool = (toolId: string) => {
-    setTools((prev) => {
-      const updated = prev.map((t) =>
-        t.id === toolId ? { ...t, isFavorite: !t.isFavorite } : t
-      );
-      try {
-        const favIds = updated.filter((t) => t.isFavorite).map((t) => t.id);
-        localStorage.setItem('noc_favorite_tool_ids', JSON.stringify(favIds));
-      } catch {
-        // ignore
-      }
-      return updated;
-    });
+    toggleFavoriteTool(toolId);
   };
 
   const [tasks, setTasks] = useState<EchoTask[]>(INITIAL_ECHO_TASKS);

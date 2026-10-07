@@ -11,7 +11,7 @@ import {
   ShieldCheck,
   Zap
 } from 'lucide-react';
-
+import { useAuth } from '../../context/AuthContext';
 interface HeaderProps {
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -29,6 +29,7 @@ export const Header: React.FC<HeaderProps> = ({
   taskCount,
   onlineToolsCount,
 }) => {
+  const { user } = useAuth();
   return (
     <header className="sticky top-0 z-40 bg-[#0c1220]/90 backdrop-blur-md border-b border-slate-800/80 px-4 lg:px-6 py-3 transition-colors">
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
@@ -125,14 +126,14 @@ export const Header: React.FC<HeaderProps> = ({
           {/* User Profile matching screenshot 3 */}
           <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
             <div className="text-right hidden sm:block">
-              <div className="text-xs font-semibold text-slate-200">rudipradnyana@gmail.com</div>
+              <div className="text-xs font-semibold text-slate-200">{user?.email || (user ? `${user.username}@iconpln.co.id` : 'operator@iconpln.co.id')}</div>
               <div className="text-[10px] text-slate-400 flex items-center justify-end gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-                NOC Engineer Shift
+                {user?.role || 'NOC Engineer'}
               </div>
             </div>
-            <div className="w-8 h-8 rounded-full bg-blue-600 text-white font-semibold flex items-center justify-center text-sm shadow-md ring-2 ring-blue-500/30">
-              R
+            <div className={`w-8 h-8 rounded-full ${user?.avatarBg || 'bg-blue-600'} text-white font-semibold flex items-center justify-center text-sm shadow-md ring-2 ring-blue-500/30`}>
+              {user?.initial || (user?.name ? user.name.charAt(0).toUpperCase() : 'U')}
             </div>
           </div>
 

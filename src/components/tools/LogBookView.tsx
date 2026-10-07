@@ -26,7 +26,7 @@ const INITIAL_ROUTINE_TASKS: RoutineLogTask[] = [
     id: 'rt-1',
     no: 1,
     task: 'Cek status OSPF Router NCS Super Backbone by SIEM',
-    personil: 'achmad.farisy',
+    personil: 'lead.noc',
     avatarChar: 'A',
     isDone: false,
   },
@@ -34,7 +34,7 @@ const INITIAL_ROUTINE_TASKS: RoutineLogTask[] = [
     id: 'rt-2',
     no: 2,
     task: 'Check Point jam 8 all SBU',
-    personil: 'achmad.farisy',
+    personil: 'lead.noc',
     avatarChar: 'A',
     isDone: false,
   },
@@ -82,7 +82,7 @@ const INITIAL_ROUTINE_TASKS: RoutineLogTask[] = [
     id: 'rt-8',
     no: 8,
     task: 'Update dashboard Power BI Report Management Gajaren',
-    personil: 'jihan.hasanah',
+    personil: 'analyst.noc',
     avatarChar: 'J',
     isDone: false,
   },
@@ -114,7 +114,7 @@ const INITIAL_ROUTINE_TASKS: RoutineLogTask[] = [
     id: 'rt-12',
     no: 12,
     task: 'Monitoring dan Rekap Incident Critical & High',
-    personil: 'rudipradnyana',
+    personil: 'ops.noc',
     avatarChar: 'R',
     isDone: false,
   },
@@ -122,21 +122,21 @@ const INITIAL_ROUTINE_TASKS: RoutineLogTask[] = [
     id: 'rt-13',
     no: 13,
     task: 'Daily Health Check Core Router & DWDM Backbone',
-    personil: 'moch.fahrizal',
+    personil: 'shift2.noc',
     avatarChar: 'M',
     isDone: false,
   },
 ];
 
 const AVAILABLE_PERSONIL = [
-  { username: 'achmad.farisy', char: 'A' },
+  { username: 'lead.noc', char: 'A' },
   { username: 'rahmat.iskandar', char: 'R' },
   { username: 'nabil.ghifary', char: 'N' },
-  { username: 'jihan.hasanah', char: 'J' },
+  { username: 'analyst.noc', char: 'J' },
   { username: 'dede.hermawan', char: 'D' },
-  { username: 'rudipradnyana', char: 'R' },
-  { username: 'moch.fahrizal', char: 'M' },
-  { username: 'dallas.permadi', char: 'D' },
+  { username: 'ops.noc', char: 'R' },
+  { username: 'shift2.noc', char: 'M' },
+  { username: 'shift1.noc', char: 'D' },
   { username: 'bintang.alamsyah', char: 'B' },
 ];
 
@@ -167,7 +167,7 @@ export const LogBookView: React.FC = () => {
     if (!newTaskText.trim()) return;
 
     const personilObj = AVAILABLE_PERSONIL.find((p) => p.username === selectedPersonil) || {
-      username: selectedPersonil || 'rudipradnyana',
+      username: selectedPersonil || 'ops.noc',
       char: (selectedPersonil || 'R').charAt(0).toUpperCase(),
     };
 
@@ -222,7 +222,7 @@ export const LogBookView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5 cursor-pointer">
-            <span className="text-xs font-semibold text-slate-700">rudipradnyana</span>
+            <span className="text-xs font-semibold text-slate-700">ops.noc</span>
             <div className="w-8 h-8 rounded-full bg-[#1d4ed8] text-white font-bold flex items-center justify-center text-sm shadow-sm">
               R
             </div>

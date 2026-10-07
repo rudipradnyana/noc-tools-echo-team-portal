@@ -38,6 +38,7 @@ import {
 } from '../../data/mockData';
 import { useTheme } from '../../context/ThemeContext';
 import { useActivity } from '../../context/ActivityContext';
+import { DataTerminasiTool } from './DataTerminasiTool';
 
 interface InteractiveWorkbenchProps {
   initialToolId?: string;
@@ -46,6 +47,13 @@ interface InteractiveWorkbenchProps {
   hideSelectorStrip?: boolean;
   onSelectTool?: (toolId: string) => void;
   onNavigateEcho?: () => void;
+}
+
+interface DataTerminasiRow {
+  hostid?: string | number;
+  hostname: string;
+  ip_loopback: string;
+  port: string;
 }
 
 export const InteractiveWorkbench: React.FC<InteractiveWorkbenchProps> = ({
@@ -90,6 +98,12 @@ export const InteractiveWorkbench: React.FC<InteractiveWorkbenchProps> = ({
   // Cek IP Publik State
   const [ipQuery, setIpQuery] = useState('103.147.22.45');
   const [ipResult, setIpResult] = useState<PublicIPRecord | null>(MOCK_PUBLIC_IPS[0]);
+
+  // Data Terminasi: real data comes from the Flask/MySQL API, never directly from MySQL.
+  const [terminasiQuery, setTerminasiQuery] = useState('');
+  const [terminasiRows, setTerminasiRows] = useState<DataTerminasiRow[]>([]);
+  const [terminasiLoading, setTerminasiLoading] = useState(false);
+  const [terminasiError, setTerminasiError] = useState<string | null>(null);
 
   // Aradial BNG State
   const [aradialUserQuery, setAradialUserQuery] = useState('cust_pln_du01@metro.corp');
@@ -225,6 +239,39 @@ export const InteractiveWorkbench: React.FC<InteractiveWorkbenchProps> = ({
     setIpResult(match);
   };
 
+  const handleSearchTerminasi = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const query = terminasiQuery.trim();
+    if (!query) return;
+
+    setTerminasiLoading(true);
+    setTerminasiError(null);
+    setTerminasiRows([]);
+    logActivity({
+      title: `Lookup Data Terminasi: ${query}`,
+      actor: 'Rudi',
+      badge: 'Diagnostic',
+      iconName: 'Search',
+      iconBg: 'bg-blue-600',
+      actionToolId: 'data-terminasi',
+    });
+
+    try {
+      const baseUrl = import.meta.env.VITE_DATA_TERMINASI_API_URL || 'http://localhost:5009/api/data-terminasi';
+      const url = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}service_id=${encodeURIComponent(query)}`;
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`API mengembalikan HTTP ${response.status}`);
+      const payload = await response.json();
+      const rows = Array.isArray(payload) ? payload : payload.results;
+      if (!Array.isArray(rows)) throw new Error('Format response API tidak dikenali');
+      setTerminasiRows(rows);
+    } catch (error) {
+      setTerminasiError(error instanceof Error ? error.message : 'Gagal menghubungi API Data Terminasi');
+    } finally {
+      setTerminasiLoading(false);
+    }
+  };
+
   const handleRunTraceroute = () => {
     setIsTracing(true);
     logActivity({
@@ -339,6 +386,7 @@ export const InteractiveWorkbench: React.FC<InteractiveWorkbenchProps> = ({
     { id: 'mac-vendor-lookup', label: 'MAC VENDOR', icon: Cpu },
     { id: 'whois-lookup', label: 'WHOIS LOOKUP', icon: Search },
     { id: 'config-cost-ncs', label: 'CONFIG COST NCS', icon: Sliders },
+    { id: 'data-terminasi', label: 'DATA TERMINASI', icon: HardDrive },
   ];
 
   // Check if current tool is one of the custom UI tools
@@ -1276,6 +1324,71 @@ end`}
                       </div>
                     ))}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* DATA TERMINASI: real lookup through backend API */}
+            {selectedToolId === 'data-terminasi' && <DataTerminasiTool />}
+            {false && (
+              <div className="rounded-2xl bg-slate-50 p-4 sm:p-6 text-slate-900">
+                <div className="rounded-2xl bg-white border border-slate-200 shadow-xl p-5 sm:p-7">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
+                    <h2 className="text-xl font-bold text-blue-600">🔎 Data Terminasi Service ID</h2>
+                    <span className="text-xs text-slate-500">Network Configuration Lookup</span>
+                  </div>
+
+                  <form onSubmit={handleSearchTerminasi} className="flex flex-col sm:flex-row gap-3 mb-6">
+                  <input
+                    type="text"
+                    value={terminasiQuery}
+                    onChange={(e) => setTerminasiQuery(e.target.value)}
+                    placeholder="Masukkan Service ID"
+                    required
+                    className="flex-1 px-4 py-2.5 rounded-lg border border-slate-300 bg-white text-sm text-slate-900 font-mono focus:outline-none focus:ring-2 focus:ring-blue-500/30 focus:border-blue-500"
+                  />
+                  <button
+                    type="submit"
+                    disabled={terminasiLoading}
+                    className="px-5 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+                  >
+                    {terminasiLoading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
+                    Search
+                  </button>
+                </form>
+
+                {terminasiError && (
+                  <div className="rounded-lg border border-amber-300 bg-amber-50 text-amber-700 p-4 text-sm mb-4">
+                    API Data Terminasi belum terhubung: {terminasiError}
+                    <div className="text-xs mt-1 opacity-80">Set VITE_DATA_TERMINASI_API_URL ke alamat backend Flask.</div>
+                  </div>
+                )}
+
+                {terminasiQuery && !terminasiLoading && !terminasiError && terminasiRows.length === 0 && (
+                  <div className="rounded-lg border border-amber-300 bg-amber-50 text-amber-700 p-4 text-sm">⚠️ Service ID &quot;{terminasiQuery}&quot; tidak ditemukan.</div>
+                )}
+
+                {terminasiRows.length > 0 && (
+                  <>
+                    <h5 className="mb-3 text-base font-semibold">Hasil pencarian untuk: <span className="text-red-600">{terminasiQuery}</span></h5>
+                    <div className="overflow-x-auto rounded-lg border border-slate-200">
+                      <table className="w-full text-left text-sm">
+                        <thead className="bg-slate-800 text-white">
+                          <tr><th className="px-4 py-3">Hostname</th><th className="px-4 py-3">IP Loopback</th><th className="px-4 py-3">Port</th></tr>
+                      </thead>
+                        <tbody>
+                          {terminasiRows.map((row, index) => (
+                            <tr key={`${row.hostname}-${row.port}-${index}`} className="border-t border-slate-200 hover:bg-slate-50 align-middle">
+                              <td className="px-4 py-3 font-semibold">{row.hostname}</td>
+                              <td className="px-4 py-3 font-mono">{row.ip_loopback}</td>
+                              <td className="px-4 py-3">{row.port}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </>
+                )}
                 </div>
               </div>
             )}

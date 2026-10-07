@@ -297,13 +297,13 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
             <div className="flex items-center gap-3">
               {/* User Avatar Circle */}
               <div className={`w-9 h-9 rounded-full ${user?.avatarBg || 'bg-[#1d4ed8]'} text-white font-bold flex items-center justify-center text-sm shadow-md ring-2 ring-blue-500/20`}>
-                {user?.initial || 'R'}
+                {user?.initial || (user?.name ? user.name.charAt(0).toUpperCase() : 'O')}
               </div>
               <div className="text-left leading-tight">
                 <div className={`text-sm font-semibold transition-colors truncate max-w-[120px] ${
                   isDark ? 'text-white group-hover:text-blue-400' : 'text-slate-900 group-hover:text-blue-600'
                 }`}>
-                  {user?.name || 'Rudi'}
+                  {user?.name || 'Operator NOC'}
                 </div>
                 <div className={`text-[11px] font-medium truncate max-w-[120px] ${
                   isDark ? 'text-slate-400' : 'text-slate-500'
