@@ -1,0 +1,246 @@
+
+.cek-ip-page {
+  --cip-primary: #1da1f2;
+  --cip-background: #15202b;
+  --cip-card: #192734;
+  --cip-text: #ffffff;
+  --cip-border: #38444d;
+  --cip-input: #253341;
+  --cip-muted: #8899a6;
+
+  position: relative;
+  min-height: 100%;
+  padding-bottom: 64px;
+  background: var(--cip-background);
+  color: var(--cip-text);
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Helvetica, Arial, sans-serif;
+}
+
+.cek-ip-page *,
+.cek-ip-page *::before,
+.cek-ip-page *::after {
+  box-sizing: border-box;
+}
+
+.cek-ip-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--cip-border);
+  background: rgba(25, 39, 52, 0.94);
+  backdrop-filter: blur(12px);
+}
+
+.cek-ip-logo {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.cek-ip-container {
+  width: 100%;
+  max-width: 850px;
+  margin: 32px auto;
+  padding: 0 24px;
+}
+
+.cek-ip-search-card,
+.cek-ip-results-card {
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid rgba(56, 68, 77, 0.5);
+  border-radius: 16px;
+  background: var(--cip-card);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+.cek-ip-card-heading {
+  margin-bottom: 24px;
+}
+
+.cek-ip-card-heading h1 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.cek-ip-card-heading p {
+  margin: 0;
+  color: var(--cip-muted);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.cek-ip-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cek-ip-form label {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.cek-ip-form input {
+  width: 100%;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--cip-border);
+  border-radius: 8px;
+  outline: none;
+  background: var(--cip-input);
+  color: var(--cip-text);
+  font-family: inherit;
+  font-size: 16px;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.cek-ip-form input::placeholder {
+  color: var(--cip-muted);
+}
+
+.cek-ip-form input:focus {
+  border-color: var(--cip-primary);
+  box-shadow: 0 0 0 2px rgba(29, 161, 242, 0.2);
+}
+
+.cek-ip-btn-search,
+.cek-ip-back-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 48px;
+  padding: 14px 20px;
+  border: none;
+  border-radius: 9999px;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.cek-ip-btn-search {
+  background: var(--cip-primary);
+  color: #ffffff;
+}
+
+.cek-ip-btn-search:hover {
+  background: #1a91da;
+}
+
+.cek-ip-results {
+  margin-top: 24px;
+}
+
+.cek-ip-section-title {
+  margin: 0 0 16px;
+  color: var(--cip-primary);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.cek-ip-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.cek-ip-table {
+  width: 100%;
+  margin: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 14px;
+}
+
+.cek-ip-table th,
+.cek-ip-table td {
+  padding: 12px;
+  border-bottom: 1px solid var(--cip-border);
+  text-align: left;
+  overflow-wrap: anywhere;
+}
+
+.cek-ip-table th {
+  background: var(--cip-input);
+  color: var(--cip-primary);
+  font-weight: 600;
+}
+
+.cek-ip-table tbody tr:hover td {
+  background: var(--cip-input);
+}
+
+.cek-ip-no-results {
+  padding: 16px 0;
+  color: var(--cip-muted);
+  font-style: italic;
+}
+
+.cek-ip-demo-notice {
+  margin-top: 20px;
+  padding: 12px 14px;
+  border: 1px solid var(--cip-border);
+  border-radius: 8px;
+  color: var(--cip-muted);
+  font-size: 13px;
+  line-height: 1.6;
+  overflow-wrap: anywhere;
+}
+
+.cek-ip-back-button {
+  margin-top: 8px;
+  background: var(--cip-input);
+  color: var(--cip-primary);
+}
+
+.cek-ip-back-button:hover {
+  background: #2c3d4f;
+}
+
+.cek-ip-watermark {
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  color: var(--cip-muted);
+  font-size: 12px;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .cek-ip-header {
+    padding: 16px;
+  }
+
+  .cek-ip-logo {
+    font-size: 18px;
+  }
+
+  .cek-ip-container {
+    margin: 20px auto;
+    padding: 0 12px;
+  }
+
+  .cek-ip-search-card,
+  .cek-ip-results-card {
+    padding: 18px;
+    border-radius: 12px;
+  }
+
+  .cek-ip-card-heading h1 {
+    font-size: 21px;
+  }
+
+  .cek-ip-table th,
+  .cek-ip-table td {
+    padding: 10px 8px;
+  }
+}
