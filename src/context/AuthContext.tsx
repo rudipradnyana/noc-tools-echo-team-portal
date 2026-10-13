@@ -128,9 +128,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       body: JSON.stringify({ username, password, fullName, role }),
     });
 
-    const data = await res.json();
+    let data: any;
+    try {
+      data = await res.json();
+    } catch {
+      throw new Error('Server backend (port 5001) tidak dapat dihubungi. Pastikan server backend sedang aktif.');
+    }
+
     if (!res.ok || !data.success) {
-      throw new Error(data.message || 'Gagal melakukan pendaftaran akun.');
+      throw new Error(data?.message || 'Gagal melakukan pendaftaran akun.');
     }
 
     return {
@@ -157,11 +163,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }),
       });
 
-      const data = await res.json();
+      let data: any;
+      try {
+        data = await res.json();
+      } catch {
+        throw new Error('Server backend (port 5001) tidak dapat dihubungi. Pastikan server backend sedang aktif.');
+      }
 
       if (!res.ok || !data.success) {
         // Jika ada pesan khusus (misal: "menunggu ACC" atau "password salah")
-        throw new Error(data.message || 'Gagal masuk.');
+        throw new Error(data?.message || 'Gagal masuk.');
       }
 
       const dbUser = data.user;
