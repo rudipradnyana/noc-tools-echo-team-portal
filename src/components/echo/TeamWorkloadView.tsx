@@ -14,6 +14,7 @@ import {
   TrendingUp,
   Filter
 } from 'lucide-react';
+import { useAuth } from '../../context/AuthContext';
 
 interface WorkloadTask {
   id: string;
@@ -35,181 +36,13 @@ interface PersonilWorkload {
   tasks: WorkloadTask[];
 }
 
-const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [
-  {
-    username: 'lead.noc',
-    name: 'Lead NOC Engineer',
-    email: 'lead.noc@iconpln.co.id',
-    avatarChar: 'A',
-    todoCount: 1,
-    inProgressCount: 0,
-    doneCount: 9,
-    totalCount: 10,
-    tasks: [
-      { id: 't1', title: 'Discover all router add solarwinds', status: 'todo', type: 'Terencana', priority: 'Low' },
-      { id: 't2', title: 'DevOps aplikasi task list echo', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 't3', title: 'Install aplikasi speedtest rkal domain speedtest.iconpln.net.id', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 't4', title: 'Install aplikasi speedtest Equnix domain speedtest.iconpln.net.id', status: 'done', type: 'Terencana', priority: 'High' },
-      { id: 't5', title: 'Konfigurasi SNMPv3 Router Core JABODETABEK', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 't6', title: 'Audit port flapping POP Gambir & Cawang', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 't7', title: 'Testing route failover upstream Singtel', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 't8', title: 'Review log BNG Aradial sesi subscriber', status: 'done', type: 'Harian', priority: 'Low' },
-      { id: 't9', title: 'Update SOP Eskalasi Trouble Ticket Tier-2', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 't10', title: 'Integrasi script cek EA ke NOC Hub', status: 'done', type: 'Terencana', priority: 'High' },
-    ],
-  },
-  {
-    username: 'rahmat',
-    name: 'Enterprise Specialist',
-    email: 'rahmat.iskandar@iconpln.co.id',
-    avatarChar: 'R',
-    todoCount: 9,
-    inProgressCount: 0,
-    doneCount: 0,
-    totalCount: 9,
-    tasks: [
-      { id: 'r1', title: 'Validasi Alarm EA Comm Lost Regional 2', status: 'todo', type: 'Harian', priority: 'High' },
-      { id: 'r2', title: 'Follow up perbaikan patchcord ODF Gandul', status: 'todo', type: 'Terencana', priority: 'Medium' },
-      { id: 'r3', title: 'Pemeriksaan redaman SFP DWDM link Cilegon', status: 'todo', type: 'Terencana', priority: 'High' },
-    ],
-  },
-  {
-    username: 'dede',
-    name: 'Dede Hermawan',
-    email: 'dede.hermawan@iconpln.co.id',
-    avatarChar: 'D',
-    todoCount: 2,
-    inProgressCount: 0,
-    doneCount: 6,
-    totalCount: 8,
-    tasks: [
-      { id: 'd1', title: 'Monitoring dan Follow Up Tiket Proaktif ke All Regional', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 'd2', title: 'Monitoring dan Follow Up Tiket Over SLA', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 'd3', title: 'Checkpoint DirOps dan Regional', status: 'done', type: 'Harian', priority: 'Medium' },
-      { id: 'd4', title: 'Rekap mingguan MTTR tiket corporate', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 'd5', title: 'Audit performa link backup PLN Kantor Pusat', status: 'done', type: 'Terencana', priority: 'Medium' },
-      { id: 'd6', title: 'Koordinasi perapihan kabel rack server NOC', status: 'done', type: 'Terencana', priority: 'Low' },
-      { id: 'd7', title: 'Verifikasi route failover Cikarang data center', status: 'todo', type: 'Terencana', priority: 'High' },
-      { id: 'd8', title: 'Review ticket pending SBU Jawa Bagian Barat', status: 'todo', type: 'Harian', priority: 'Medium' },
-    ],
-  },
-  {
-    username: 'yafi',
-    name: 'Yafi Pratama',
-    email: 'yafi.pratama@iconpln.co.id',
-    avatarChar: 'Y',
-    todoCount: 0,
-    inProgressCount: 0,
-    doneCount: 0,
-    totalCount: 0,
-    tasks: [],
-  },
-  {
-    username: 'nabil',
-    name: 'Nabil Ghifary',
-    email: 'nabil.ghifary@iconpln.co.id',
-    avatarChar: 'N',
-    todoCount: 6,
-    inProgressCount: 0,
-    doneCount: 4,
-    totalCount: 10,
-    tasks: [
-      { id: 'n1', title: 'Monitoring ALL CDN (Akamai, Google, Netflix, Cloudflare)', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 'n2', title: 'Monitoring Aplikasi Internal NOC Dashboard', status: 'done', type: 'Harian', priority: 'Medium' },
-      { id: 'n3', title: 'Monitoring IBBC Core Backbone link', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 'n4', title: 'Monitoring IP Public pool utilization', status: 'done', type: 'Harian', priority: 'Medium' },
-      { id: 'n5', title: 'Benchmarking latency CDN Akamai via Telkom & Indosat', status: 'todo', type: 'Terencana', priority: 'Low' },
-      { id: 'n6', title: 'Analisis DNS recursive query spikes', status: 'todo', type: 'Terencana', priority: 'Medium' },
-    ],
-  },
-  {
-    username: 'didik',
-    name: 'Didik Kurniawan',
-    email: 'didik.kurniawan@iconpln.co.id',
-    avatarChar: 'D',
-    todoCount: 0,
-    inProgressCount: 0,
-    doneCount: 0,
-    totalCount: 0,
-    tasks: [],
-  },
-  {
-    username: 'jihan',
-    name: 'Traffic Analyst',
-    email: 'analyst.noc@iconpln.co.id',
-    avatarChar: 'J',
-    todoCount: 2,
-    inProgressCount: 0,
-    doneCount: 24,
-    totalCount: 26,
-    tasks: [
-      { id: 'j1', title: 'Update dashboard Power BI Report Management Gajaren', status: 'done', type: 'Harian', priority: 'High' },
-      { id: 'j2', title: 'Automasi kalkulasi ketersediaan SLA bulanan', status: 'done', type: 'Terencana', priority: 'High' },
-      { id: 'j3', title: 'Laporan eksekutif performa backbone Q3', status: 'done', type: 'Terencana', priority: 'Medium' },
-      { id: 'j4', title: 'Sinkronisasi data ticketing remedy ke Power BI', status: 'todo', type: 'Terencana', priority: 'Medium' },
-      { id: 'j5', title: 'Penyusunan dashboard utilisasi transit global', status: 'todo', type: 'Terencana', priority: 'Low' },
-    ],
-  },
-  {
-    username: 'dallas',
-    name: 'Shift 1 Engineer',
-    email: 'shift1.noc@iconpln.co.id',
-    avatarChar: 'D',
-    todoCount: 5,
-    inProgressCount: 0,
-    doneCount: 1,
-    totalCount: 6,
-    tasks: [
-      { id: 'dl1', title: 'Optimasi routing BGP Anycast DNS', status: 'done', type: 'Terencana', priority: 'High' },
-      { id: 'dl2', title: 'Investigasi latency spike interkoneksi IIX', status: 'todo', type: 'Harian', priority: 'High' },
-      { id: 'dl3', title: 'Pembaruan firmware switch aggregation Cisco', status: 'todo', type: 'Terencana', priority: 'Medium' },
-    ],
-  },
-  { username: 'herly', name: 'Herly Santoso', email: 'herly.santoso@iconpln.co.id', avatarChar: 'H', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'bintang', name: 'Bintang Alamsyah', email: 'bintang.alamsyah@iconpln.co.id', avatarChar: 'B', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  {
-    username: 'moch',
-    name: 'Shift 2 Engineer',
-    email: 'shift2.noc@iconpln.co.id',
-    avatarChar: 'M',
-    todoCount: 4,
-    inProgressCount: 0,
-    doneCount: 4,
-    totalCount: 8,
-    tasks: [
-      { id: 'm1', title: 'Create SPP Pengadaan TAC DWDM Fiberhome', status: 'todo', type: 'Terencana', priority: 'Medium' },
-      { id: 'm2', title: 'Create SPP Pengadaan TAC DWDM Huawei', status: 'todo', type: 'Terencana', priority: 'Medium' },
-      { id: 'm3', title: 'Rekap log maintenance OLT ZTE dan Huawei', status: 'done', type: 'Harian', priority: 'Low' },
-      { id: 'm4', title: 'Pengecekan utilisasi slot subrack DWDM Ungaran', status: 'done', type: 'Terencana', priority: 'High' },
-    ],
-  },
-  { username: 'indra', name: 'Indra Gunawan', email: 'indra.gunawan@iconpln.co.id', avatarChar: 'I', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'imronassidiqi3', name: 'Imron Assidiqi', email: 'imronassidiqi3@iconpln.co.id', avatarChar: 'I', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'ocid89', name: 'Ocid Rahmat', email: 'ocid89@iconpln.co.id', avatarChar: 'O', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'meby', name: 'Meby Anggoro', email: 'meby@iconpln.co.id', avatarChar: 'M', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'galihwahyu66210', name: 'Galih Wahyu', email: 'galihwahyu66210@iconpln.co.id', avatarChar: 'G', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'bayu', name: 'Bayu Wicaksono', email: 'bayu.wicaksono@iconpln.co.id', avatarChar: 'B', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  { username: 'aldi', name: 'Aldi Firmansyah', email: 'aldi.firmansyah@iconpln.co.id', avatarChar: 'A', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-  {
-    username: 'ops.noc',
-    name: 'Operations Engineer',
-    email: 'operator@iconpln.co.id',
-    avatarChar: 'R',
-    todoCount: 0,
-    inProgressCount: 0,
-    doneCount: 0,
-    totalCount: 0,
-    tasks: [],
-  },
-  { username: 'ahmadfadelviici', name: 'Ahmad Fadel', email: 'ahmadfadelviici@iconpln.co.id', avatarChar: 'A', todoCount: 0, inProgressCount: 0, doneCount: 0, totalCount: 0, tasks: [] },
-];
+const INITIAL_PERSONIL_DATA: PersonilWorkload[] = [];
 
 export const TeamWorkloadView: React.FC = () => {
+  const { user } = useAuth();
   const [personilList] = useState<PersonilWorkload[]>(INITIAL_PERSONIL_DATA);
   const [chartMode, setChartMode] = useState<'Bar' | 'Line'>('Bar');
-  const [expandedPersonil, setExpandedPersonil] = useState<Record<string, boolean>>({
-    'lead.noc': true,
-  });
+  const [expandedPersonil, setExpandedPersonil] = useState<Record<string, boolean>>({});
 
   const toggleExpand = (username: string) => {
     setExpandedPersonil((prev) => ({
@@ -244,9 +77,9 @@ export const TeamWorkloadView: React.FC = () => {
           </div>
 
           <div className="flex items-center gap-2.5 cursor-pointer">
-            <span className="text-xs font-semibold text-slate-700">ops.noc</span>
+            <span className="text-xs font-semibold text-slate-700">{user?.username || 'Operator'}</span>
             <div className="w-8 h-8 rounded-full bg-[#1d4ed8] text-white font-bold flex items-center justify-center text-sm shadow-sm">
-              R
+              {(user?.name || user?.username || 'O').charAt(0).toUpperCase()}
             </div>
           </div>
         </div>
@@ -309,7 +142,13 @@ export const TeamWorkloadView: React.FC = () => {
           </div>
 
           {/* Chart Canvas matching screenshot */}
-          <div className="overflow-x-auto pt-2 pb-6">
+          {personilList.length === 0 ? (
+            <div className="py-12 text-center text-slate-400 border border-dashed border-slate-200 rounded-xl">
+              <BarChart2 className="w-8 h-8 mx-auto mb-2 opacity-30 text-slate-400" />
+              <p className="text-xs font-medium text-slate-500">Belum ada data distribusi task per personil</p>
+            </div>
+          ) : (
+            <div className="overflow-x-auto pt-2 pb-6">
             <div className="min-w-[840px] h-[250px] relative flex flex-col justify-between pl-8 pr-4">
               
               {/* Grid Lines and Y-Axis */}
@@ -382,6 +221,7 @@ export const TeamWorkloadView: React.FC = () => {
 
             </div>
           </div>
+          )}
         </div>
 
         {/* Section 2: Personil & Task */}
@@ -397,7 +237,14 @@ export const TeamWorkloadView: React.FC = () => {
 
           {/* Personil Accordion Cards */}
           <div className="space-y-3">
-            {personilList.map((person) => {
+            {personilList.length === 0 ? (
+              <div className="bg-white rounded-2xl border border-slate-200/80 p-10 text-center text-slate-400">
+                <Users className="w-10 h-10 mx-auto mb-3 opacity-30 text-slate-400" />
+                <p className="text-sm font-semibold text-slate-700">Belum ada personil on-duty</p>
+                <p className="text-xs text-slate-400 mt-1">Data personil dummy telah dibersihkan.</p>
+              </div>
+            ) : (
+              personilList.map((person) => {
               const isExpanded = !!expandedPersonil[person.username];
               const todoTasks = person.tasks.filter((t) => t.status === 'todo');
               const doneTasks = person.tasks.filter((t) => t.status === 'done');
@@ -562,7 +409,7 @@ export const TeamWorkloadView: React.FC = () => {
                   )}
                 </div>
               );
-            })}
+            }))}
           </div>
         </div>
 

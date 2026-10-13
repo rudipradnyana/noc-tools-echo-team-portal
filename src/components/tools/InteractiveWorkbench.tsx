@@ -1291,40 +1291,6 @@ end`}
                   </div>
                 </div>
 
-                {/* Team Specialists On-Duty */}
-                <div className={`p-4 rounded-xl border ${isDark ? 'bg-[#111927] border-slate-800' : 'bg-slate-50 border-slate-200'}`}>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className={`text-xs font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                      Spesialis On-Duty Shift Ini (Echo Team)
-                    </span>
-                    <span className="text-[11px] text-emerald-500 font-medium">● 6 Active</span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
-                    {[
-                      { name: 'Achmad Farisy', role: 'Core Network Engineer', bg: 'bg-blue-600', init: 'A' },
-                      { name: 'Budi Santoso', role: 'IP Transit & BGP Routing', bg: 'bg-emerald-600', init: 'B' },
-                      { name: 'Rudi Pradnyana', role: 'Lead Operations & Escalation', bg: 'bg-purple-600', init: 'R' },
-                      { name: 'Diana Lestari', role: 'Access & GPON Distribution', bg: 'bg-amber-600', init: 'D' },
-                      { name: 'Fikri Ramadhan', role: 'Backbone DWDM & Fiber Ops', bg: 'bg-rose-600', init: 'F' },
-                      { name: 'Gita Permata', role: 'Quality Assurance & SLA Monitor', bg: 'bg-cyan-600', init: 'G' },
-                    ].map((member, i) => (
-                      <div
-                        key={i}
-                        className={`flex items-center gap-2.5 px-3 py-2 rounded-lg border text-xs ${
-                          isDark ? 'bg-[#162238] border-slate-800 text-slate-200' : 'bg-white border-slate-200 text-slate-800'
-                        }`}
-                      >
-                        <span className={`w-7 h-7 rounded-full ${member.bg} text-white font-bold flex items-center justify-center text-[10px] shrink-0`}>
-                          {member.init}
-                        </span>
-                        <div className="min-w-0">
-                          <div className="font-semibold leading-tight truncate">{member.name}</div>
-                          <div className={`text-[10px] truncate ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{member.role}</div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
             )}
 
